@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { Resume, Experience, Education, Skill } from './resume';
 import { ScriptService } from './script.service';
-declare let pdfMake: any ;
+
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
