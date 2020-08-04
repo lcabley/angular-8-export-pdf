@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { Resume, Experience, Education, Skill } from './resume';
 import { ScriptService } from './script.service';
-
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -29,6 +29,8 @@ export class AppComponent {
     if (!this.resume.skills || this.resume.skills.length === 0) {
       this.resume.skills = [];
       this.resume.skills.push(new Skill());
+      pdfMake.vfs = pdfFonts.pdfMake.vfs;
+      this.scriptService.load('pdfMake', 'vfsFonts');
     }
 
     console.log('Loading External Scripts');
@@ -48,11 +50,11 @@ export class AppComponent {
     const documentDefinition = this.getDocumentDefinition();
 
     switch (action) {
-      case 'open': pdfMake.createPdf(documentDefinition).open(); break;
-      case 'print': pdfMake.createPdf(documentDefinition).print(); break;
-      case 'download': pdfMake.createPdf(documentDefinition).download(); break;
+      case 'open': pdfMake.createPdf(documentDefinition, null, null, pdfFonts.pdfMake.vfs).open(); break;
+      case 'print': pdfMake.createPdf(documentDefinition, null, null, pdfFonts.pdfMake.vfs).print(); break;
+      case 'download': pdfMake.createPdf(documentDefinition, null, null, pdfFonts.pdfMake.vfs).download(); break;
 
-      default: pdfMake.createPdf(documentDefinition).open(); break;
+      default: pdfMake.createPdf(documentDefinition, null, null, pdfFonts.pdfMake.vfs).open(); break;
     }
 
   }
@@ -228,7 +230,7 @@ export class AppComponent {
   getEducationObject(educations: Education[]) {
     return {
       table: {
-        widths: ['*', '*', '*', '*'],
+        widths: ['*', '*', '*', '*', '*'],
         body: [
           [{
             text: 'Degree',
@@ -246,9 +248,13 @@ export class AppComponent {
             text: 'Result',
             style: 'tableHeader'
           },
+          {
+            text: 'Result',
+            style: 'tableHeader'
+          },
           ],
           ...educations.map(ed => {
-            return [ed.degree, ed.college, ed.passingYear, ed.percentage];
+            return [ed.degree, ed.college, ed.passingYear, ed.percentage, ed.degree];
           })
         ]
       }
